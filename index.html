@@ -134,7 +134,87 @@
         .nav-links a:hover::after {
             width: 100%;
         }
-        
+
+        /* Mobile Menu Toggle (Hamburger) */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 200;
+            position: relative;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: var(--text-light);
+            border-radius: 3px;
+            transition: all 0.3s ease-out;
+        }
+
+        /* Mobile Side Nav */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%; /* Hidden by default */
+            width: 280px;
+            height: 100vh;
+            background: rgba(12, 12, 20, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 150;
+            padding: 100px 40px 40px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .mobile-nav.active {
+            right: 0; /* Slides in from right to left */
+        }
+
+        .mobile-nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .mobile-nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+            display: block;
+        }
+
+        .mobile-nav-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Overlay for mobile menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Hero Section */
         .hero {
             min-height: 100vh;
@@ -173,11 +253,27 @@
         }
         
         .hero h1 .highlight {
-            display: block;
+            display: inline-block; /* Changed from block for inline typing */
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-coral));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        /* Typer Cursor */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 4px;
+            height: 1em;
+            background-color: var(--accent-cyan);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
         
         .hero-desc {
@@ -476,7 +572,7 @@
             line-height: 1.7;
         }
         
-        /* Stats Section - UPDATED */
+        /* Stats Section */
         .stats {
             position: relative;
             z-index: 1;
@@ -554,7 +650,7 @@
             opacity: 0.7;
         }
         
-        /* Promise Section - NEW */
+        /* Promise Section */
         .promise {
             position: relative;
             z-index: 1;
@@ -747,7 +843,11 @@
             }
             
             .nav-links {
-                display: none;
+                display: none; /* Hide desktop links */
+            }
+
+            .menu-toggle {
+                display: flex; /* Show hamburger */
             }
             
             .hero {
@@ -794,23 +894,45 @@
     
     <!-- Three.js Background -->
     <canvas id="bg-canvas"></canvas>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="menu-overlay"></div>
+
+    <!-- Mobile Side Nav -->
+    <div class="mobile-nav">
+        <ul class="mobile-nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
     
     <!-- Navigation -->
     <nav>
         <div class="logo">TOYZILLA</div>
+        
+        <!-- Desktop Links -->
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
             <li><a href="#products">Products</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </nav>
     
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
             <p class="hero-tagline">Premium 3D Printed Toys</p>
-            <h1>Bring Your <span class="highlight">Imagination</span> To Life</h1>
+            <h1>We Create <span class="highlight typer-text"></span><span class="typewriter-cursor"></span></h1>
             <p class="hero-desc">Discover a world of meticulously crafted 3D printed toys. Each piece is a masterpiece of precision engineering and artistic excellence.</p>
             <div class="cta-buttons">
                 <a href="#products" class="btn btn-primary">Explore Collection</a>
@@ -906,7 +1028,7 @@
         </div>
     </section>
     
-    <!-- Stats Section - UPDATED FOR NEW BUSINESS -->
+    <!-- Stats Section -->
     <section class="stats">
         <div class="stats-container reveal">
             <div class="stats-header">
@@ -936,7 +1058,7 @@
         </div>
     </section>
     
-    <!-- Promise Section - NEW -->
+    <!-- Promise Section -->
     <section class="promise">
         <div class="promise-content reveal">
             <h2>Our Promise To You</h2>
@@ -1027,6 +1149,79 @@
     <script type="module">
         import * as THREE from 'three';
         
+        // ============ Auto Typer Logic ============
+        const typerText = document.querySelector('.typer-text');
+        const words = ["Imagination", "Dragons", "Robots", "Dreams", "Legends"];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function typeEffect() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                typerText.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50;
+            } else {
+                typerText.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 100;
+            }
+
+            if (!isDeleting && charIndex === currentWord.length) {
+                typeSpeed = 2000; // Pause at end
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                typeSpeed = 500; // Pause before typing new word
+            }
+
+            setTimeout(typeEffect, typeSpeed);
+        }
+
+        // Start typer after a delay to let page load
+        setTimeout(typeEffect, 1500);
+
+
+        // ============ Mobile Navigation Logic ============
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+
+        function toggleMenu() {
+            mobileNav.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            // Animate Hamburger
+            const spans = menuToggle.querySelectorAll('span');
+            if (mobileNav.classList.contains('active')) {
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+            } else {
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+        
+        // Close menu when link is clicked
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileNav.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+
         // ============ Main Background Scene ============
         const bgCanvas = document.getElementById('bg-canvas');
         const bgScene = new THREE.Scene();
